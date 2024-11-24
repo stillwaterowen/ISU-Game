@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Measurement + PT Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        #game {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            max-width: 600px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #timer {
+            font-size: 24px;
+            color: red;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game">
+    <h1>Geometry Measurement Game</h1>
+    <p id="money">Sigma Coins: $<span id="moneyAmount">0</span></p>
+    <p id="timer">Time Left: <span id="timeLeft">20</span>s</p>
+    <p id="question"></p>
+    <input type="text" id="answer" placeholder="Your answer here">
+    <button onclick="checkAnswer()" id="submitButton" disabled>Submit</button>
+    <button onclick="skipQuestion()">Skip (Cost: $10 Sigma Coins)</button>
+    <p id="feedback" class="hidden"></p>
+</div>
+
+<script>
+    let money = 0;
+    let timeLeft = 20; // Default time for normal questions
+    let timerInterval;
+    let currentQuestion;
+    let correctAnswer;
+
+    function startGame() {
+        resetTimer();
+        generateQuestion();
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        document.getElementById('timeLeft').innerText = timeLeft;
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timeLeft').innerText = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                endGame("Time's up! You lost!");
+            }
+        }, 1000);
+    }
+
+    function generateQuestion() {
+        const randomNum1 = Math.floor(Math.random() * 20) + 1;
+        const randomNum2 = Math.floor(Math.random() * 20) + 1;
+        const randomNum3 = Math.floor(Math.random() * 20) + 1;
+        const randomNum4 = Math.floor(Math.random() * 10) + 1;
+
+        // Example word problems involving measurement and geometry
+        const problems = [
+            {
+                question: `A rectangle has a length of ${randomNum1} cm and a width of ${randomNum2} cm. What is its area?`,
+                answer: randomNum1 * randomNum2, // Area
+                time: 20
+            },
+            {
+                question: `A triangle has a base of ${randomNum1} cm and a height of ${randomNum2} cm. What is its area?`,
+                answer: 0.5 * randomNum1 * randomNum2, // Area
+                time: 20
+            },
+            {
+                question: `If a circle has a radius of ${randomNum1} cm, what is its circumference? (Use π = 3.14)`,
+                answer: 2 * 3.14 * randomNum1, // Circumference
+                time: 20
+            },
+            {
+                question: `You have a box with dimensions ${randomNum1} cm x ${randomNum2} cm x ${randomNum3} cm. What is its volume?`,
+                answer: randomNum1 * randomNum2 * randomNum3, // Volume
+                time: 20
+            },
+            {
+                question: `The perimeter of a triangle is ${randomNum1 + randomNum2 + randomNum3} cm. If two sides are ${randomNum1} cm and ${randomNum2} cm, what is the length of the third side?`,
+                answer: randomNum1 + randomNum2 + randomNum3 - (randomNum1 + randomNum2), // Third side
+                time: 20
+            },
+            {
+                question: `A trapezoid has bases of ${randomNum1} cm and ${randomNum2} cm, and a height of ${randomNum3} cm. What is its area?`,
+                answer: 0.5 * (randomNum1 + randomNum2) * randomNum3, // Area
+                time: 20
+            },
+            {
+                question: `A cylinder has a radius of ${randomNum1} cm and a height of ${randomNum2} cm. What is its volume? (Use π = 3.14)`,
+                answer: 3.14 * randomNum1 * randomNum1 * randomNum2, // Volume
+                time: 20
+            },
+            {
+                question: `Calculate the area of a parallelogram with a base of ${randomNum1} cm and a height of ${randomNum2} cm.`,
+                answer: randomNum1 * randomNum2, // Area
+                time: 20
+            },
+            {
+                question: `You need to paint a wall of dimensions ${randomNum1} m by ${randomNum2} m. If one liter of paint covers ${randomNum3} m², how many liters do you need?`,
+                answer: Math.ceil((randomNum1 * randomNum2) / randomNum3), // Liters of paint needed
+                time: 20
+            },
+            {
+                question: `If a cone has a radius of ${randomNum1} cm and a height of ${randomNum2} cm, what is its volume? (Use π = 3.14)`,
+                answer: (1/3) * 3.14 * randomNum1 * randomNum1 * randomNum2, // Volume of cone
+                time: 20
+            },
+            {
+                question: `A rhombus has diagonals of ${randomNum1} cm and ${randomNum2} cm. What is its area?`,
+                answer: 0.5 * randomNum1 * randomNum2, // Area of rhombus
+                time: 20
+            },
+            {
+                question: `A right triangle has legs of ${randomNum1} cm and ${randomNum2} cm. What is the length of the hypotenuse? (Use Pythagorean theorem)`,
+                answer: Math.sqrt(Math.pow(randomNum1, 2) + Math.pow(randomNum2, 2)), // Hypotenuse
+                time: 20
+            },
+            {
+                question: `An extremely difficult question: A sphere has a radius of ${randomNum1} cm. What is its volume? (Use π = 3.14)`,
+                answer: (4/3) * 3.14 * Math.pow(randomNum1, 3), // Volume of sphere
+                time: 50,
+                reward: 100
+            }
+        ];
+
+        // Randomly select a problem
+        const selectedProblem = problems[Math.floor(Math.random() * problems.length)];
+        currentQuestion = selectedProblem.question;
+        correctAnswer = selectedProblem.answer;
+        timeLeft = selectedProblem.time || 20; // Set time for the question
+
+        document.getElementById('timeLeft').innerText = timeLeft;
+        document.getElementById('question').innerText = currentQuestion;
+        document.getElementById('answer').value = '';
+        document.getElementById('feedback').classList.add('hidden');
+        document.getElementById('submitButton').disabled = true;
+
+        resetTimer();
+    }
+
+    function checkAnswer() {
+        const answerInput = document.getElementById('answer').value;
+        const feedbackElement = document.getElementById('feedback');
+
+        if (parseFloat(answerInput) === correctAnswer) {
+            const reward = currentQuestion.includes("extremely difficult question") ? 100 : 30; // Check for the difficult question
+            money += reward; // Earn Sigma Coins for a correct answer
+            document.getElementById('moneyAmount').innerText = money;
+            feedbackElement.innerText = `Correct! 🎉 You earned ${reward} Sigma Coins.`;
+            feedbackElement.classList.remove('hidden');
+        } else {
+            endGame("Wrong answer! You lost!");
+        }
+        resetTimer();
+        generateQuestion();
+    }
+
+    function skipQuestion() {
+        if (money >= 10) {
+            money -= 10; // Cost for skipping
+            document.getElementById('moneyAmount').innerText = money;
+            resetTimer();
+            generateQuestion();
+        } else {
+            alert("Not enough Sigma Coins to skip!");
+        }
+    }
+
+    function endGame(message) {
+        clearInterval(timerInterval);
+        alert(message + " Your final Sigma Coins are: $" + money);
+        location.reload(); // Restart the game
+    }
+
+    // Enable the submit button only if the input field has a value
+    document.getElementById('answer').addEventListener('input', function () {
+        document.getElementById('submitButton').disabled = !this.value;
+    });
+
+    // Start the game when the page loads
+    startGame();
+</script>
+
+</body>
+</html>
