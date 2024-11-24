@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geometry Measurement + PT Game</title>
+    <title>Geometry Measurement Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -153,14 +153,14 @@
                 time: 20
             },
             {
-                question: `Difficult question: A sphere has a radius of ${randomNum1} cm. What is its volume? (Use π = 3.14)`,
-                answer: (4/3) * 3.14 * Math.pow(randomNum1, 3), // Volume of sphere
+                question: `A triangular pyramid has a height of ${randomNum1} cm and a base height of ${randomNum2} cm with a base of ${randomNum3} cm. What is the volume of the pyramid if the height is doubled?`,
+                answer: (1/3) * (0.5 * randomNum2 * randomNum3) * (randomNum1 * 2), // Volume when height is doubled
                 time: 50,
                 reward: 100
             },
             {
-                question: `Difficult question: A triangle based pyramid has a height of ${randomNum1}. If the height of the base is {randomNum2} and the base is ${randomNum3}. What is the area of the pyramid if the height is doubled?
-                answer: (((randomNum2)*(randomNum3)*0.5)*(randomNum1)*2)*(1/3)
+                question: `An extremely difficult question: A sphere has a radius of ${randomNum1} cm. What is its volume? (Use π = 3.14)`,
+                answer: (4/3) * 3.14 * Math.pow(randomNum1, 3), // Volume of sphere
                 time: 50,
                 reward: 100
             }
@@ -186,7 +186,7 @@
         const feedbackElement = document.getElementById('feedback');
 
         if (parseFloat(answerInput) === correctAnswer) {
-            const reward = currentQuestion.includes("extremely difficult question") ? 100 : 30; // Check for the difficult question
+            const reward = currentQuestion.includes("extremely difficult question") ? 100 : (currentQuestion.includes("triangular pyramid") ? 100 : 30); // Check for the difficult question
             money += reward; // Earn Sigma Coins for a correct answer
             document.getElementById('moneyAmount').innerText = money;
             feedbackElement.innerText = `Correct! 🎉 You earned ${reward} Sigma Coins.`;
